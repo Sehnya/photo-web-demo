@@ -15,11 +15,11 @@ interface BookProps {
 }
 
 const initialPackages: PackageItem[] = [
-  { id: 'headshots', title: 'HEADSHOTS', price: 1000, image: '../public/headshot.png', hoverColor: '#FF7A00' },
-  { id: 'classic', title: 'CLASSIC PORTRAITS', price: 1000, image: '../public/Classic.png', hoverColor: '#8B4513' },
-  { id: 'creative', title: 'CREATIVE PORTRAITS', price: 1000, image: '../public/creative.png', hoverColor: '#FF69B4' },
-  { id: 'location', title: 'LOCATION SPECIAL', price: 1000, image: '../public/Location.png', hoverColor: '#3AA3FF' },
-  { id: 'branding', title: 'BRANDING SHOOTS', price: 1000, image: '../public/Twins-2.png', hoverColor: '#9C27B0' },
+  { id: 'headshots', title: 'HEADSHOTS', price: 1000, image: '/headshot.png', hoverColor: '#FF7A00' },
+  { id: 'classic', title: 'CLASSIC PORTRAITS', price: 1000, image: '/Classic.png', hoverColor: '#8B4513' },
+  { id: 'creative', title: 'CREATIVE PORTRAITS', price: 1000, image: '/creative.png', hoverColor: '#FF69B4' },
+  { id: 'location', title: 'LOCATION SPECIAL', price: 1000, image: '/Location.png', hoverColor: '#3AA3FF' },
+  { id: 'branding', title: 'BRANDING SHOOTS', price: 1000, image: '/Twins-2.png', hoverColor: '#9C27B0' },
 ];
 
 function hexFromRGB(r:number,g:number,b:number){

@@ -166,7 +166,7 @@ export default function App() {
                         </div>
                         <div className="hidden md:block absolute z-10 top-[55%] right-[5%] -rotate-6 cursor-target">
                             <TiltedCard
-                                imageSrc="../public/photo-3.png"
+                                imageSrc="/photo-3.png"
                                 captionText={ 'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="500px"
                                 containerWidth="300px"
@@ -193,7 +193,7 @@ export default function App() {
                         {/* Mobile cards stacked with interleaved words */}
                         <div className="md:hidden relative z-10 w-full mt-40 mb-10 flex flex-col items-center gap-6 px-4">
                             <TiltedCard
-                                imageSrc="../public/photo-1.png"
+                                imageSrc="/photo-1.png"
                                 captionText={'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="360px"
                                 containerWidth="80vw"
@@ -209,7 +209,7 @@ export default function App() {
                             {/* Word after first image (mobile only) */}
                             <div className="md:hidden text-white text-3xl font-black tracking-tight">CREATE.</div>
                             <TiltedCard
-                                imageSrc="../public/photo-2.png"
+                                imageSrc="/photo-2.png"
                                 captionText={'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="360px"
                                 containerWidth="80vw"
@@ -225,7 +225,7 @@ export default function App() {
                             {/* Word after second image (mobile only) */}
                             <div className="md:hidden text-white text-3xl font-black tracking-tight">CAPTURE.</div>
                             <TiltedCard
-                                imageSrc="../public/photo-3.png"
+                                imageSrc="/photo-3.png"
                                 captionText={'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="360px"
                                 containerWidth="80vw"
