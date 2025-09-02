@@ -256,14 +256,66 @@ export default function Checkout() {
                   Secure Checkout - ${depositAmount.toFixed(2)}
                 </a>
               ) : (
-                <button
-                  disabled={cart.length === 0}
-                  onClick={() => alert('Add your Stripe Payment Link(s) in src/services/payments.ts to enable payment.')}
-                  className="w-full bg-white text-black font-semibold py-4 px-6 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                >
-                  <FaLock className="mr-2" />
-                  Secure Checkout - ${depositAmount.toFixed(2)}
-                </button>
+                <div className="space-y-3">
+                  <button
+                    disabled={cart.length === 0}
+                    onClick={() => {
+                      // For demo purposes, simulate successful payment and redirect to confirmation
+                      // In production, this would be handled by Stripe's success URL
+                      if (cart.length > 0) {
+                        // Store booking details for confirmation page
+                        const bookingDetails = {
+                          orderId: `BAP-${Date.now()}`,
+                          packages: cart,
+                          subtotal,
+                          tax,
+                          total,
+                          paymentMethod,
+                          depositAmount,
+                          remainingAmount,
+                          stateCode,
+                          timestamp: new Date().toISOString()
+                        };
+                        localStorage.setItem('lastBooking', JSON.stringify(bookingDetails));
+                        localStorage.removeItem('cart'); // Clear cart after successful payment
+                        window.location.hash = '#/booking-confirmation';
+                      } else {
+                        alert('Add your Stripe Payment Link(s) in src/services/payments.ts to enable payment.');
+                      }
+                    }}
+                    className="w-full bg-white text-black font-semibold py-4 px-6 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                  >
+                    <FaLock className="mr-2" />
+                    Secure Checkout - ${depositAmount.toFixed(2)}
+                  </button>
+
+                  {/* Demo Payment Button */}
+                  <button
+                    disabled={cart.length === 0}
+                    onClick={() => {
+                      if (cart.length > 0) {
+                        const bookingDetails = {
+                          orderId: `DEMO-${Date.now()}`,
+                          packages: cart,
+                          subtotal,
+                          tax,
+                          total,
+                          paymentMethod,
+                          depositAmount,
+                          remainingAmount,
+                          stateCode,
+                          timestamp: new Date().toISOString()
+                        };
+                        localStorage.setItem('lastBooking', JSON.stringify(bookingDetails));
+                        localStorage.removeItem('cart');
+                        window.location.hash = '#/booking-confirmation';
+                      }
+                    }}
+                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center"
+                  >
+                    🚀 Demo Payment (For Testing) - ${depositAmount.toFixed(2)}
+                  </button>
+                </div>
               )}
 
               <div className="text-xs opacity-70 mt-4 text-center">

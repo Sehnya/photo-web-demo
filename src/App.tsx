@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Schedule from './pages/Schedule';
 import Checkout from './pages/Checkout';
+import BookingConfirmation from './pages/BookingConfirmation';
 
 export default function App() {
     type CartItem = { id: string; title: string; price: number; qty: number };
@@ -19,10 +20,10 @@ export default function App() {
         try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
     });
     const [isCartOpen, setIsCartOpen] = React.useState(false);
-    const [stateCode, setStateCode] = React.useState<string>('CA');
+
 
     React.useEffect(() => {
-        try { localStorage.setItem('cart', JSON.stringify(cart)); } catch {}
+        try { localStorage.setItem('cart', JSON.stringify(cart)); } catch { }
     }, [cart]);
 
     const addPackageToCart = (pkg: { id: string; title: string; price: number }) => {
@@ -39,11 +40,7 @@ export default function App() {
     const removeItem = (id: string) => setCart(prev => prev.filter(i => i.id !== id));
     const changeQty = (id: string, delta: number) => setCart(prev => prev.map(i => i.id === id ? { ...i, qty: Math.max(1, i.qty + delta) } : i));
 
-    const taxRates: Record<string, number> = { CA: 0.0825, NY: 0.088, TX: 0.0625, FL: 0.06, IL: 0.1025, Other: 0.05 };
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const taxRate = taxRates[stateCode] ?? taxRates.Other;
-    const tax = subtotal * taxRate;
-    const total = subtotal + tax;
     const items = [
         {
             label: "About",
@@ -68,7 +65,7 @@ export default function App() {
             bgColor: "#000000",
             textColor: "#fff",
             links: [
-                { label: "Book Your Shoot", ariaLabel: "Booking Information", href: "#/book"},
+                { label: "Book Your Shoot", ariaLabel: "Booking Information", href: "#/book" },
                 { label: "Schedule", ariaLabel: "Schedule your shoot", href: "#/schedule" },
                 { label: "Instagram", ariaLabel: "Instagram", href: "https://instagram.com" },
 
@@ -86,11 +83,14 @@ export default function App() {
 
     const pageKey = route.replace('#', '') || '/';
     return (
-        <main className="grid min-h-screen place-items-start w-full">
-            <TargetCursor
-                spinDuration={2}
-                hideDefaultCursor={true}
-            />
+        <main className="grid min-h-screen place-items-start w-full overflow-x-hidden">
+            {/* Only show custom cursor on desktop */}
+            <div className="hidden md:block">
+                <TargetCursor
+                    spinDuration={2}
+                    hideDefaultCursor={true}
+                />
+            </div>
 
             <CardNav
                 logo={'BRANDEN ADAMS PHOTOGRAPHY'}
@@ -120,12 +120,12 @@ export default function App() {
                             <p className={' text-white cursor-target'} > CONNECT  </p>
                         </div>
                         {/* Desktop marquee */}
-                        <div className="hidden md:block absolute top-[20%] h-100vh w-[200vw] bg-black p-0 m-0 z-0 overflow-hidden pointer-events-none">
+                        <div className="hidden md:block absolute top-[20%] left-0 right-0 h-100vh bg-black p-0 m-0 z-0 overflow-hidden pointer-events-none">
                             <ScrollVelocity
                                 texts={[' BRANDEN • ADAMS • PHOTOGRAPHY •']}
                                 velocity={100}
                                 className="custom-scroll-text relative"
-                                scrollerStyle= {{ fontSize: '25vh', lineHeight: '50vh', opacity: 1, textShadow: '0 0 10px #fff' }}
+                                scrollerStyle={{ fontSize: '25vh', lineHeight: '50vh', opacity: 1, textShadow: '0 0 10px #fff' }}
                             />
                         </div>
 
@@ -133,7 +133,7 @@ export default function App() {
                         <div className="hidden md:block absolute z-10 top-[55%] left-[5%] rotate-3 cursor-target">
                             <TiltedCard
                                 imageSrc="/photo-1.png"
-                                captionText={ 'BRANDENADAMSPHOTOGRAPHY'}
+                                captionText={'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="500px"
                                 containerWidth="300px"
                                 imageHeight="100%"
@@ -150,7 +150,7 @@ export default function App() {
                         <div className="hidden md:block absolute z-10 top-[55%] left-[43%] -rotate-3 cursor-target">
                             <TiltedCard
                                 imageSrc="/photo-2.png"
-                                captionText={ 'BRANDENADAMSPHOTOGRAPHY'}
+                                captionText={'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="500px"
                                 containerWidth="300px"
                                 imageHeight="100%"
@@ -167,7 +167,7 @@ export default function App() {
                         <div className="hidden md:block absolute z-10 top-[55%] right-[5%] -rotate-6 cursor-target">
                             <TiltedCard
                                 imageSrc="/photo-3.png"
-                                captionText={ 'BRANDENADAMSPHOTOGRAPHY'}
+                                captionText={'BRANDENADAMSPHOTOGRAPHY'}
                                 containerHeight="500px"
                                 containerWidth="300px"
                                 imageHeight="100%"
@@ -181,7 +181,7 @@ export default function App() {
                         </div>
 
                         {/* Mobile marquee */}
-                        <div className="md:hidden absolute top-20 left-0 right-0 w-[200vw] bg-black z-0 overflow-hidden">
+                        <div className="md:hidden absolute top-20 left-0 right-0 bg-black z-0 overflow-hidden">
                             <ScrollVelocity
                                 texts={['BRANDEN • ADAMS • PHOTOGRAPHY']}
                                 velocity={60}
@@ -283,6 +283,11 @@ export default function App() {
                         <Checkout />
                     </motion.section>
                 )}
+                {pageKey.startsWith('/booking-confirmation') && (
+                    <motion.section key="booking-confirmation" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35 }} className="w-full flex flex-col items-center">
+                        <BookingConfirmation />
+                    </motion.section>
+                )}
             </AnimatePresence>
 
             {/* Cart Drawer */}
@@ -295,7 +300,7 @@ export default function App() {
                             animate={{ opacity: 0.5 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="fixed inset-0 bg-black z-[98]"
+                            className="fixed inset-0 bg-black z-[9998]"
                             onClick={() => setIsCartOpen(false)}
                         />
                         <motion.aside
@@ -304,7 +309,8 @@ export default function App() {
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-                            className="fixed right-0 top-0 bottom-0 w-[88vw] sm:w-[420px] bg-white text-black z-[99] shadow-2xl flex flex-col"
+                            className="cart-drawer fixed right-0 top-0 bottom-0 w-[85vw] max-w-sm bg-white text-black z-[9999] shadow-2xl flex flex-col"
+                            style={{ cursor: 'auto' }}
                         >
                             <div className="flex items-center justify-between px-4 h-14 border-b">
                                 <div className="font-semibold">Your Cart</div>
@@ -315,50 +321,58 @@ export default function App() {
                                     <div className="text-center text-gray-500 py-10">Your cart is empty.</div>
                                 ) : (
                                     cart.map(item => (
-                                        <div key={item.id} className="flex items-center gap-3 border rounded-lg p-3">
-                                            <div className="flex-1">
-                                                <div className="font-medium">{item.title}</div>
-                                                <div className="text-sm text-gray-600">${'{'}item.price.toFixed(2){'}'} each</div>
+                                        <div key={item.id} className="border rounded-lg p-4 bg-gray-50">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-base text-gray-900">{item.title}</h3>
+                                                    <p className="text-sm text-gray-600 mt-1">${item.price.toFixed(2)} each</p>
+                                                </div>
+                                                <button
+                                                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                    onClick={() => removeItem(item.id)}
+                                                >
+                                                    Remove
+                                                </button>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <button className="px-2 py-1 border rounded" onClick={() => changeQty(item.id, -1)}>-</button>
-                                                <span className="w-6 text-center">{item.qty}</span>
-                                                <button className="px-2 py-1 border rounded" onClick={() => changeQty(item.id, 1)}>+</button>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-100"
+                                                        onClick={() => changeQty(item.id, -1)}
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="w-8 text-center font-medium">{item.qty}</span>
+                                                    <button
+                                                        className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-100"
+                                                        onClick={() => changeQty(item.id, 1)}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-lg font-bold text-gray-900">${(item.price * item.qty).toFixed(2)}</div>
+                                                </div>
                                             </div>
-                                            <div className="w-20 text-right font-semibold">${'{'}(item.price * item.qty).toFixed(2){'}'}</div>
-                                            <button className="ml-2 text-red-600" onClick={() => removeItem(item.id)}>Remove</button>
                                         </div>
                                     ))
                                 )}
                             </div>
-                            <div className="border-t p-4 space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm text-gray-600" htmlFor="stateSel">State of Residence</label>
-                                    <select id="stateSel" className="border rounded px-2 py-1"
-                                        value={stateCode}
-                                        onChange={(e) => setStateCode(e.target.value)}
-                                    >
-                                        <option value="CA">CA</option>
-                                        <option value="NY">NY</option>
-                                        <option value="TX">TX</option>
-                                        <option value="FL">FL</option>
-                                        <option value="IL">IL</option>
-                                        <option value="Other">Other</option>
-                                    </select>
+                            <div className="border-t border-gray-200 p-4 space-y-4">
+                                <div className="flex items-center justify-between py-2">
+                                    <span className="text-lg font-semibold text-gray-900">Subtotal</span>
+                                    <span className="text-xl font-bold text-gray-900">${subtotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <span>Subtotal</span>
-                                    <span>${'{'}subtotal.toFixed(2){'}'}</span>
+                                <div className="text-xs text-gray-500 text-center py-1">
+                                    Tax will be calculated at checkout
                                 </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <span>Tax ({'${'}(taxRate * 100).toFixed(2){'}'}%)</span>
-                                    <span>${'{'}tax.toFixed(2){'}'}</span>
-                                </div>
-                                <div className="flex items-center justify-between font-semibold text-lg">
-                                    <span>Total</span>
-                                    <span>${'{'}total.toFixed(2){'}'}</span>
-                                </div>
-                                <button disabled={cart.length===0} className="w-full h-11 rounded-md bg-black text-white disabled:opacity-50" onClick={() => { setIsCartOpen(false); window.location.hash = '#/checkout'; }}>Checkout</button>
+                                <button
+                                    disabled={cart.length === 0}
+                                    className="w-full h-12 rounded-lg bg-black text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors"
+                                    onClick={() => { setIsCartOpen(false); window.location.hash = '#/checkout'; }}
+                                >
+                                    Proceed to Checkout
+                                </button>
                             </div>
                         </motion.aside>
                     </>

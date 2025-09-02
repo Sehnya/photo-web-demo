@@ -1,5 +1,5 @@
-import React from 'react';
 import { motion } from 'motion/react';
+import React from 'react';
 import TiltedCard from '../components/TiltedCard';
 
 export default function Portfolio() {
@@ -82,8 +82,8 @@ export default function Portfolio() {
             <button
               onClick={() => setActiveSection('gallery')}
               className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${activeSection === 'gallery'
-                  ? 'bg-white text-black'
-                  : 'text-white hover:bg-white/20'
+                ? 'bg-white text-black'
+                : 'text-white hover:bg-white/20'
                 }`}
             >
               Gallery
@@ -91,8 +91,8 @@ export default function Portfolio() {
             <button
               onClick={() => setActiveSection('reviews')}
               className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${activeSection === 'reviews'
-                  ? 'bg-white text-black'
-                  : 'text-white hover:bg-white/20'
+                ? 'bg-white text-black'
+                : 'text-white hover:bg-white/20'
                 }`}
             >
               Reviews

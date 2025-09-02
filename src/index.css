@@ -3,3 +3,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent horizontal scrolling */
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Ensure proper cursor behavior in cart and mobile */
+.cart-drawer,
+.cart-drawer * {
+  cursor: auto !important;
+}
+
+/* Show default cursor on mobile */
+@media (max-width: 768px) {
+  body,
+  body * {
+    cursor: auto !important;
+  }
+}

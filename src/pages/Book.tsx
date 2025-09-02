@@ -105,12 +105,28 @@ function getDominantColor(src: string): Promise<string> {
 
 export default function Book({ onAddPackage }: BookProps) {
   const [showScheduleCTA, setShowScheduleCTA] = React.useState(false);
+
   const handleClick = (pkg: PackageItem) => {
     const ok = window.confirm(`Do you want to add ${pkg.title} to your cart?`);
     if (ok) {
       onAddPackage?.(pkg);
       setShowScheduleCTA(true);
     }
+  };
+
+  const addDemoItems = () => {
+    // Add multiple demo items to cart for testing checkout flow
+    const demoItems = [
+      initialPackages[0], // Headshots
+      initialPackages[2], // Creative Portraits
+    ];
+
+    demoItems.forEach(pkg => {
+      onAddPackage?.(pkg);
+    });
+
+    setShowScheduleCTA(true);
+    alert('Demo items added to cart! You can now test the checkout process.');
   };
 
   const [pkgs, setPkgs] = React.useState<PackageItem[]>(initialPackages);
@@ -136,6 +152,22 @@ export default function Book({ onAddPackage }: BookProps) {
       >
         OUR PACKAGES
       </motion.p>
+
+      {/* Demo Button for Testing */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="mt-6 text-center"
+      >
+        <button
+          onClick={addDemoItems}
+          className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-2 px-6 rounded-full hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg"
+        >
+          🚀 Add Demo Items (For Testing)
+        </button>
+        <p className="text-xs text-gray-400 mt-2">Quickly add sample packages to test the checkout flow</p>
+      </motion.div>
 
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 max-w-7xl mx-auto w-full">
         {pkgs.map((pkg) => (

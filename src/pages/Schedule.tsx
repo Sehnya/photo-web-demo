@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { FaClock, FaMapMarkerAlt, FaCamera, FaCalendarAlt } from 'react-icons/fa';
+import BookingConfirmation from './BookingConfirmation';
+import { sendBookingConfirmationEmail, previewBookingEmail } from '../services/emailService';
 
 function formatTime(hour24: number) {
   const ampm = hour24 >= 12 ? 'PM' : 'AM';
@@ -40,6 +42,7 @@ export default function Schedule() {
     phone: '',
     notes: ''
   });
+  const [confirmedBooking, setConfirmedBooking] = React.useState<any>(null);
 
   // Generate available time slots based on session duration
   const getAvailableSlots = () => {
@@ -60,7 +63,7 @@ export default function Schedule() {
     }
 
     const booking = {
-      id: `${selectedDate}-${selectedTime}-${Date.now()}`,
+      bookingId: `BA-${selectedDate.replace(/-/g, '')}-${selectedTime}-${Date.now().toString().slice(-4)}`,
       sessionType: selectedSession.name,
       date: selectedDate,
       startTime: selectedTime,
@@ -74,6 +77,17 @@ export default function Schedule() {
       const existing = JSON.parse(localStorage.getItem('bookings') || '[]');
       existing.push(booking);
       localStorage.setItem('bookings', JSON.stringify(existing));
+
+      // Send confirmation email
+      sendBookingConfirmationEmail(booking).then((success) => {
+        if (success) {
+          console.log('Booking confirmation email sent successfully');
+        } else {
+          console.error('Failed to send booking confirmation email');
+        }
+      });
+
+      setConfirmedBooking(booking);
       setBookingStep('success');
     } catch {
       alert('Error saving booking. Please try again.');
@@ -84,6 +98,7 @@ export default function Schedule() {
     setBookingStep('select');
     setSelectedTime(null);
     setClientInfo({ name: '', email: '', phone: '', notes: '' });
+    setConfirmedBooking(null);
   };
 
   return (
@@ -97,6 +112,34 @@ export default function Schedule() {
         >
           SCHEDULE YOUR SHOOT
         </motion.h1>
+
+        {/* Demo Button for Testing */}
+        {bookingStep === 'select' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-center mb-8"
+          >
+            <button
+              onClick={() => {
+                setSelectedSession(sessionTypes[1]); // Classic Portraits
+                setSelectedTime(10); // 10 AM
+                setClientInfo({
+                  name: 'Demo Client',
+                  email: 'demo@example.com',
+                  phone: '(555) 123-4567',
+                  notes: 'This is a demo booking for testing purposes.'
+                });
+                alert('Demo data filled in! You can now test the booking confirmation.');
+              }}
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold py-2 px-6 rounded-full hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg"
+            >
+              🎯 Fill Demo Data (For Testing)
+            </button>
+            <p className="text-xs text-gray-400 mt-2">Quickly fill in sample data to test the booking flow</p>
+          </motion.div>
+        )}
 
         {bookingStep === 'select' && (
           <motion.div
@@ -117,8 +160,8 @@ export default function Schedule() {
                     key={session.id}
                     onClick={() => setSelectedSession(session)}
                     className={`p-4 rounded-lg border-2 transition-all text-left ${selectedSession.id === session.id
-                        ? 'border-white bg-white/10'
-                        : 'border-white/20 hover:border-white/40'
+                      ? 'border-white bg-white/10'
+                      : 'border-white/20 hover:border-white/40'
                       }`}
                   >
                     <div className="font-semibold text-lg">{session.name}</div>
@@ -163,8 +206,8 @@ export default function Schedule() {
                     key={hour}
                     onClick={() => setSelectedTime(hour)}
                     className={`p-3 rounded-lg font-semibold transition-all ${selectedTime === hour
-                        ? 'bg-white text-black'
-                        : 'bg-white/10 hover:bg-white/20 text-white'
+                      ? 'bg-white text-black'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
                       }`}
                   >
                     {formatTime(hour)} - {formatTime(hour + selectedSession.hours)}
@@ -257,61 +300,11 @@ export default function Schedule() {
           </motion.div>
         )}
 
-        {bookingStep === 'success' && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="text-center bg-white/5 rounded-2xl p-8"
-          >
-            <div className="text-6xl mb-6">✅</div>
-            <h2 className="text-3xl font-bold mb-4">Booking Confirmed!</h2>
-            <p className="text-lg opacity-90 mb-6 max-w-2xl mx-auto">
-              Thank you for booking your {selectedSession.name} session. You'll receive a confirmation email shortly with all the details and preparation instructions.
-            </p>
-
-            <div className="bg-white/10 rounded-lg p-6 mb-6 max-w-md mx-auto">
-              <h3 className="font-semibold mb-3">Booking Summary</h3>
-              <div className="text-sm space-y-2 text-left">
-                <div className="flex justify-between">
-                  <span>Session:</span>
-                  <span>{selectedSession.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Date:</span>
-                  <span>{new Date(selectedDate).toLocaleDateString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Time:</span>
-                  <span>{selectedTime && formatTime(selectedTime)} - {selectedTime && formatTime(selectedTime + selectedSession.hours)}</span>
-                </div>
-                <div className="flex justify-between font-semibold">
-                  <span>Total:</span>
-                  <span>${selectedSession.price}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <p className="text-sm opacity-80">
-                A 50% deposit (${selectedSession.price / 2}) is required to secure your booking.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="#/checkout"
-                  className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-colors"
-                >
-                  Pay Deposit Now
-                </a>
-                <button
-                  onClick={resetBooking}
-                  className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-white text-white font-semibold hover:bg-white/10 transition-colors"
-                >
-                  Book Another Session
-                </button>
-              </div>
-            </div>
-          </motion.div>
+        {bookingStep === 'success' && confirmedBooking && (
+          <BookingConfirmation
+            booking={confirmedBooking}
+            onNewBooking={resetBooking}
+          />
         )}
 
         {/* Preparation Guidelines */}
